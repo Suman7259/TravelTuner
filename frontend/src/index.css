@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .form-input {
+    @apply w-full p-4 bg-white/5 border-2 border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-teal-400 transition-all duration-300;
+  }
+  
+  /* FIX: Add this rule for the dropdown options */
+  .form-input option {
+    @apply text-black bg-white;
+  }
+}
