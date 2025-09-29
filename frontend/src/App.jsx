@@ -7,6 +7,7 @@ import StarRating from './components/StarRating';
 import HomePage from './components/HomePage';
 import FeaturesPage from './components/FeaturesPage';
 import AboutPage from './components/AboutPage';
+import ChatBox from './components/ChatBox';
 
 const App = () => {
   // State management
@@ -526,6 +527,7 @@ const App = () => {
           </button>
         </form>
       </Modal>
+     <ChatBox />
     </div>
   );
 };
