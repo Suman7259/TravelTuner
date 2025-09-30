@@ -1,6 +1,8 @@
 import React from "react";
 // import { LogOut } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
+import {Link} from "react-router-dom"
+import ReviewsSection from "./ReviewsSection";
 
 const Navigation = ({
   currentPage,
@@ -17,7 +19,7 @@ const Navigation = ({
         </div>
 
         <div className="hidden md:flex space-x-8">
-          {["home", "features", "feedback", "about", "ChatBot🤖"].map(
+          {["home", "features", "feedback", "about"].map(
             (page) => (
               <button
                 key={page}
@@ -31,6 +33,8 @@ const Navigation = ({
             )
           )}
         </div>
+
+          {/* <Link to="./ReviewsSection">FEEDBACK</Link> */}
 
         {isAuthenticated && (
           <li className="list-none px-2 py-1">
