@@ -9,7 +9,7 @@ app.use(cors({
     credentials:true
 }))
 
-app.use(express.json({limit:"16kb"}))
+app.use(express.json({}))
 
 app.use(express.urlencoded({extended:"true",limit:"16kb"}))
 
@@ -25,6 +25,10 @@ app.use("/api/v1/users", userRouter)
 
 import chatRouter from "./routes/chat.routes.js";
 app.use("/api/v1/chat", chatRouter);
+
+import itineraryRouter from "./routes/itinerary.routes.js";
+app.use("/api/v1/itinerary", itineraryRouter);
+
 
 
 export {app}
