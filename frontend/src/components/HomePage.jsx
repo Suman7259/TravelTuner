@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navigation from "./Navigation";
 import CharDhamSection from "./CharDhamSection";
 import ItinerarySection from "./ItinerarySection";
 import ReviewsSection from "./ReviewsSection";
 import { useAuth0 } from "@auth0/auth0-react";
+import MapWithDirections from "../components/MapWithDirections";
 
 // Helper for professional icons
 const FeatureIcon = ({ path, className }) => (
@@ -37,6 +38,43 @@ const HomePage = ({
   const [generatedItinerary, setGeneratedItinerary] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [userLocation, setUserLocation] = useState("Bhubaneswar"); // Default fallback
+
+  // Get user's current location on component mount
+  useEffect(() => {
+    // Try to get user location from browser geolocation
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          
+          // Reverse geocode to get city name
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            
+            // Extract city or town from the address
+            const city = data.address.city || 
+                        data.address.town || 
+                        data.address.village || 
+                        data.address.state || 
+                        "Delhi";
+            
+            setUserLocation(city);
+          } catch (error) {
+            console.error("Error getting location name:", error);
+            // Keep default location
+          }
+        },
+        (error) => {
+          console.log("Geolocation not available, using default location");
+          // Keep default location
+        }
+      );
+    }
+  }, []);
 
   const features = [
     {
@@ -104,13 +142,13 @@ const HomePage = ({
       if (response.ok && data.itinerary) {
         setGeneratedItinerary({
           content: data.itinerary,
-          details: body
+          details: body,
         });
         // Scroll to itinerary section
         setTimeout(() => {
-          document.getElementById('generated-itinerary')?.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
+          document.getElementById("generated-itinerary")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
           });
         }, 100);
       } else {
@@ -118,7 +156,9 @@ const HomePage = ({
       }
     } catch (error) {
       console.error("Error generating itinerary:", error);
-      setError("Error generating itinerary. Please check your connection and try again.");
+      setError(
+        "Error generating itinerary. Please check your connection and try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -170,6 +210,24 @@ const HomePage = ({
                 onSubmit={generateItinerary}
                 className="grid grid-cols-1 md:grid-cols-2 gap-5"
               >
+                {/* Origin Field - NEW */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-blue-100/80">
+                    Starting From
+                  </label>
+                  <input
+                    type="text"
+                    name="origin"
+                    placeholder="e.g., Mumbai, Delhi"
+                    defaultValue={userLocation}
+                    required
+                    className="form-input"
+                  />
+                  <p className="text-xs text-blue-100/60">
+                    {userLocation !== "Bhubaneswar" ? "📍 Detected your location" : "💡 Enter your starting city"}
+                  </p>
+                </div>
+
                 {[
                   {
                     name: "destination",
@@ -279,7 +337,9 @@ const HomePage = ({
                   >
                     {isLoading ? (
                       <>
-                        <span className="inline-block animate-spin mr-2">⏳</span>
+                        <span className="inline-block animate-spin mr-2">
+                          ⏳
+                        </span>
                         Generating...
                       </>
                     ) : (
@@ -315,8 +375,18 @@ const HomePage = ({
                     className="text-white/60 hover:text-white transition-colors"
                     aria-label="Close itinerary"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -324,20 +394,28 @@ const HomePage = ({
                 {/* Trip Details Summary */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                   <div className="bg-white/5 rounded-xl p-4">
+                    <p className="text-sm text-blue-100/60 mb-1">From</p>
+                    <p className="text-white font-semibold capitalize">
+                      {generatedItinerary.details.origin}
+                    </p>
+                  </div>
+                  <div className="bg-white/5 rounded-xl p-4">
                     <p className="text-sm text-blue-100/60 mb-1">Destination</p>
-                    <p className="text-white font-semibold capitalize">{generatedItinerary.details.destination}</p>
+                    <p className="text-white font-semibold capitalize">
+                      {generatedItinerary.details.destination}
+                    </p>
                   </div>
                   <div className="bg-white/5 rounded-xl p-4">
                     <p className="text-sm text-blue-100/60 mb-1">Duration</p>
-                    <p className="text-white font-semibold capitalize">{generatedItinerary.details.duration}</p>
+                    <p className="text-white font-semibold capitalize">
+                      {generatedItinerary.details.duration}
+                    </p>
                   </div>
                   <div className="bg-white/5 rounded-xl p-4">
                     <p className="text-sm text-blue-100/60 mb-1">Budget</p>
-                    <p className="text-white font-semibold capitalize">{generatedItinerary.details.budget}</p>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <p className="text-sm text-blue-100/60 mb-1">Travel Style</p>
-                    <p className="text-white font-semibold capitalize">{generatedItinerary.details.travelStyle}</p>
+                    <p className="text-white font-semibold capitalize">
+                      {generatedItinerary.details.budget}
+                    </p>
                   </div>
                 </div>
 
@@ -355,7 +433,7 @@ const HomePage = ({
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(generatedItinerary.content);
-                      alert('Itinerary copied to clipboard!');
+                      alert("Itinerary copied to clipboard!");
                     }}
                     className="bg-gradient-to-r from-purple-400 to-pink-500 text-white px-6 py-3 rounded-full font-semibold transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
                   >
@@ -363,9 +441,11 @@ const HomePage = ({
                   </button>
                   <button
                     onClick={() => {
-                      const blob = new Blob([generatedItinerary.content], { type: 'text/plain' });
+                      const blob = new Blob([generatedItinerary.content], {
+                        type: "text/plain",
+                      });
                       const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
+                      const a = document.createElement("a");
                       a.href = url;
                       a.download = `itinerary-${generatedItinerary.details.destination}.txt`;
                       a.click();
@@ -387,6 +467,24 @@ const HomePage = ({
           </section>
         )}
 
+        {/* Dynamic Map Section - Only shows after itinerary is generated */}
+        {generatedItinerary && (
+          <section className="pb-20">
+            <div className="container mx-auto px-6">
+              <div className="max-w-5xl mx-auto bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 className="text-3xl font-bold text-white text-center mb-6">
+                  🗺️ View Route: {generatedItinerary.details.origin} → {generatedItinerary.details.destination}
+                </h2>
+                <MapWithDirections 
+                  origin={generatedItinerary.details.origin} 
+                  destination={generatedItinerary.details.destination} 
+                />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Booking Section */}
         <section className="pb-20 bg-gray-900/50">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
