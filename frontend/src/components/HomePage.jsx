@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import HeroSection from "../components/HeroSection";
 import Navigation from "./Navigation";
 import CharDhamSection from "./CharDhamSection";
 import ItinerarySection from "./ItinerarySection";
@@ -35,27 +36,25 @@ const HomePage = ({
   reviews,
   setFeedbackType,
 }) => {
+  const { isAuthenticated, isLoading } = useAuth0();
   const [generatedItinerary, setGeneratedItinerary] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState(null);
-  const [userLocation, setUserLocation] = useState("Bhubaneswar"); // Default fallback
+  const [userLocation, setUserLocation] = useState("Bhubaneswar");
 
   // Get user's current location on component mount
   useEffect(() => {
-    // Try to get user location from browser geolocation
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
           
-          // Reverse geocode to get city name
           try {
             const response = await fetch(
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const data = await response.json();
             
-            // Extract city or town from the address
             const city = data.address.city || 
                         data.address.town || 
                         data.address.village || 
@@ -65,12 +64,10 @@ const HomePage = ({
             setUserLocation(city);
           } catch (error) {
             console.error("Error getting location name:", error);
-            // Keep default location
           }
         },
         (error) => {
           console.log("Geolocation not available, using default location");
-          // Keep default location
         }
       );
     }
@@ -123,7 +120,7 @@ const HomePage = ({
 
   const generateItinerary = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsGenerating(true);
     setError(null);
     setGeneratedItinerary(null);
 
@@ -144,7 +141,6 @@ const HomePage = ({
           content: data.itinerary,
           details: body,
         });
-        // Scroll to itinerary section
         setTimeout(() => {
           document.getElementById("generated-itinerary")?.scrollIntoView({
             behavior: "smooth",
@@ -160,10 +156,28 @@ const HomePage = ({
         "Error generating itinerary. Please check your connection and try again."
       );
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-400 mb-4"></div>
+          <p className="text-2xl font-semibold">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show hero section if not authenticated
+  if (!isAuthenticated) {
+    return <HeroSection />;
+  }
+
+  // Main HomePage content (only shown when authenticated)
   return (
     <div className="relative min-h-screen bg-gray-900 text-white overflow-x-hidden">
       {/* Background Image & Gradient Overlay */}
@@ -210,7 +224,7 @@ const HomePage = ({
                 onSubmit={generateItinerary}
                 className="grid grid-cols-1 md:grid-cols-2 gap-5"
               >
-                {/* Origin Field - NEW */}
+                {/* Origin Field */}
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-blue-100/80">
                     Starting From
@@ -332,10 +346,10 @@ const HomePage = ({
                 <div className="md:col-span-2 text-center pt-4">
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isGenerating}
                     className="bg-gradient-to-r from-teal-400 to-blue-500 text-white px-10 py-3 rounded-full text-lg font-semibold transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-teal-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
-                    {isLoading ? (
+                    {isGenerating ? (
                       <>
                         <span className="inline-block animate-spin mr-2">
                           ⏳
@@ -467,7 +481,7 @@ const HomePage = ({
           </section>
         )}
 
-        {/* Dynamic Map Section - Only shows after itinerary is generated */}
+        {/* Dynamic Map Section */}
         {generatedItinerary && (
           <section className="pb-20">
             <div className="container mx-auto px-6">
