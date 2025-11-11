@@ -35,13 +35,13 @@ router.post("/generate", async (req, res) => {
       contents: prompt,
       config: { 
         thinkingConfig: { thinkingBudget: 0 }, 
-        maxOutputTokens: 10 // Limit output to ~10 tokens later if needed increase the token count
+        maxOutputTokens: 1000 // Limit output to ~10 tokens later if needed increase the token count
       },
     });
 
     // Trim to ~100 words
     let itineraryText = result.text || "No itinerary generated.";
-    itineraryText = itineraryText.split(/\s+/).slice(0, 10).join(' ');
+    itineraryText = itineraryText.split(/\s+/).slice(0, 1000).join(' ');
 
     res.json({ success: true, itinerary: itineraryText });
   } catch (error) {

@@ -102,17 +102,17 @@ const AboutPage = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {[
                 {
-                  name: 'Arjun Rajesh',
+                  name: 'Suman Sourav Chakra',
                   role: 'CEO & Co-Founder',
                   avatar: 'AR',
-                  bio: 'Former Google AI researcher with 10+ years in machine learning. Passionate about using AI to solve real-world problems and making travel accessible to all.',
+                  bio: 'Motivated and detail-oriented 4th-year engineering student at Trident Academy of Technology, Bhubaneswar, specializing in Computer Science. Proficient in Java MongoDB, Express.js, React,and MySQL.Adept at applying theoretical knowledge to practical projects and real-world problem-solving scenarios. Seeking a summer internship opportunity to enhance my skills and contribute to impactful projects',
                   expertise: ['AI/ML', 'Travel Tech', 'Strategy']
                 },
                 {
-                  name: 'Priya Sharma',
+                  name: 'Sujit Barik',
                   role: 'CTO & Co-Founder',
                   avatar: 'PS',
-                  bio: 'Ex-Microsoft engineer and travel enthusiast. Expert in scalable systems and AI architecture. Has personally traveled to 45+ countries and understands traveler needs.',
+                  bio: 'Motivated and detail-oriented final-year Computer Science engineering student at Trident Academy of Technology, Bhubaneswar, with hands-on experience in full-stack development. Skilled in Java, MySQL, MongoDB, Express.js, React, and Node.js.Passionate about applying technical knowledge to real-world projects, solving complex problems, and contributing to innovative software solutions. Seeking opportunities to further enhance my development skills and build impactful, user-focused applications.',
                   expertise: ['System Architecture', 'AI Engineering', 'Product']
                 }
               ].map((member) => (

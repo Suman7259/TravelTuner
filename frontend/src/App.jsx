@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Component imports
 import Modal from './components/Modal';
@@ -8,6 +9,8 @@ import HomePage from './components/HomePage';
 import FeaturesPage from './components/FeaturesPage';
 import AboutPage from './components/AboutPage';
 import ChatBox from './components/ChatBox';
+import CharDhamSection from './components/CharDhamSection';
+import PaymentPage from './components/PaymentPage';
 
 const App = () => {
   // State management
@@ -214,7 +217,8 @@ const App = () => {
     
     const selectedPackage = packageDetails[packageType];
     if (selectedPackage) {
-      showNotification(`${selectedPackage.name} selected! Our team will contact you soon for booking details.`);
+      showNotification(`${selectedPackage.name} selected! Redirecting to payment...`);
+      window.location.href = '/payment';
     }
   };
 
@@ -352,183 +356,191 @@ const App = () => {
   };
 
   return (
-    <div className="font-sans">
-      {renderCurrentPage()}
-      
-      {/* Notification System */}
-      {notification && (
-        <div className={`fixed top-20 right-6 px-6 py-4 rounded-xl text-white font-semibold z-50 shadow-2xl transform transition-all duration-300 ${
-          notification.type === 'error' 
-            ? 'bg-red-500' 
-            : 'bg-gradient-to-r from-teal-400 to-green-500'
-        }`}>
-          {notification.message}
-        </div>
-      )}
-      
-      {/* Login Modal */}
-      <Modal
-        id="login"
-        title="Welcome Back!"
-        onClose={() => setActiveModal(null)}
-        activeModal={activeModal}
-      >
-        <form onSubmit={handleLogin} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
-          >
-            Login
-          </button>
-        </form>
-        <div className="text-center mt-6 text-gray-600">
-          Don't have an account?{' '}
-          <button
-            onClick={() => setActiveModal('signup')}
-            className="text-indigo-600 font-semibold hover:underline"
-          >
-            Sign up here
-          </button>
-        </div>
-      </Modal>
-      
-      {/* Signup Modal */}
-      <Modal
-        id="signup"
-        title="Join TravelTuner"
-        onClose={() => setActiveModal(null)}
-        activeModal={activeModal}
-      >
-        <form onSubmit={handleSignup} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Create Password"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
-          >
-            Create Account
-          </button>
-        </form>
-        <div className="text-center mt-6 text-gray-600">
-          Already have an account?{' '}
-          <button
-            onClick={() => setActiveModal('login')}
-            className="text-indigo-600 font-semibold hover:underline"
-          >
-            Login here
-          </button>
-        </div>
-      </Modal>
-      
-      {/* Feedback Modal */}
-      <Modal
-        id="feedback"
-        title="Share Your Experience"
-        onClose={resetFeedbackForm}
-        activeModal={activeModal}
-      >
-        <form onSubmit={handleFeedback} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Rate Your Experience:
-            </label>
-            <div className="flex justify-center">
-              <StarRating 
-                rating={selectedRating} 
-                onRatingChange={setSelectedRating}
-                interactive={true}
-              />
-            </div>
+    <Router>
+      <div className="font-sans">
+        <Routes>
+          <Route path="/" element={renderCurrentPage()} />
+          <Route path="/home" element={renderCurrentPage()} />
+          <Route path="/chardham" element={<CharDhamSection />} />
+          <Route path="/payment" element={<PaymentPage />} />
+        </Routes>
+
+        {/* Notification System */}
+        {notification && (
+          <div className={`fixed top-20 right-6 px-6 py-4 rounded-xl text-white font-semibold z-50 shadow-2xl transform transition-all duration-300 ${
+            notification.type === 'error' 
+              ? 'bg-red-500' 
+              : 'bg-gradient-to-r from-teal-400 to-green-500'
+          }`}>
+            {notification.message}
           </div>
-          <input
-            type="text"
-            name="destination"
-            placeholder="Trip Destination"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          />
-          <select
-            name="travelType"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
-          >
-            <option value="">Select Travel Type</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Cultural">Cultural</option>
-            <option value="Spiritual">Spiritual</option>
-            <option value="Family">Family</option>
-            <option value="Char Dham">Char Dham Yatra</option>
-            <option value="Business">Business</option>
-            <option value="Solo">Solo Travel</option>
-          </select>
-          <textarea
-            name="reviewText"
-            placeholder="Share your detailed experience, what you loved, and any suggestions for improvement..."
-            rows="5"
-            required
-            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all resize-none"
-          />
-          <label className="flex items-center space-x-3">
+        )}
+      
+        {/* Login Modal */}
+        <Modal
+          id="login"
+          title="Welcome Back!"
+          onClose={() => setActiveModal(null)}
+          activeModal={activeModal}
+        >
+          <form onSubmit={handleLogin} className="space-y-4">
             <input
-              type="checkbox"
-              name="consent"
+              type="email"
+              name="email"
+              placeholder="Email Address"
               required
-              className="w-5 h-5 text-indigo-600"
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
             />
-            <span className="text-sm text-gray-700">
-              I agree to share this review publicly to help other travelers
-            </span>
-          </label>
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
-          >
-            Submit Review
-          </button>
-        </form>
-      </Modal>
-     <ChatBox />
-    </div>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
+            >
+              Login
+            </button>
+          </form>
+          <div className="text-center mt-6 text-gray-600">
+            Don't have an account?{' '}
+            <button
+              onClick={() => setActiveModal('signup')}
+              className="text-indigo-600 font-semibold hover:underline"
+            >
+              Sign up here
+            </button>
+          </div>
+        </Modal>
+      
+        {/* Signup Modal */}
+        <Modal
+          id="signup"
+          title="Join TravelTuner"
+          onClose={() => setActiveModal(null)}
+          activeModal={activeModal}
+        >
+          <form onSubmit={handleSignup} className="space-y-4">
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Create Password"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
+            >
+              Create Account
+            </button>
+          </form>
+          <div className="text-center mt-6 text-gray-600">
+            Already have an account?{' '}
+            <button
+              onClick={() => setActiveModal('login')}
+              className="text-indigo-600 font-semibold hover:underline"
+            >
+              Login here
+            </button>
+          </div>
+        </Modal>
+      
+        {/* Feedback Modal */}
+        <Modal
+          id="feedback"
+          title="Share Your Experience"
+          onClose={resetFeedbackForm}
+          activeModal={activeModal}
+        >
+          <form onSubmit={handleFeedback} className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Rate Your Experience:
+              </label>
+              <div className="flex justify-center">
+                <StarRating 
+                  rating={selectedRating} 
+                  onRatingChange={setSelectedRating}
+                  interactive={true}
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              name="destination"
+              placeholder="Trip Destination"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            />
+            <select
+              name="travelType"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all"
+            >
+              <option value="">Select Travel Type</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Spiritual">Spiritual</option>
+              <option value="Family">Family</option>
+              <option value="Char Dham">Char Dham Yatra</option>
+              <option value="Business">Business</option>
+              <option value="Solo">Solo Travel</option>
+            </select>
+            <textarea
+              name="reviewText"
+              placeholder="Share your detailed experience, what you loved, and any suggestions for improvement..."
+              rows="5"
+              required
+              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-all resize-none"
+            />
+            <label className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                name="consent"
+                required
+                className="w-5 h-5 text-indigo-600"
+              />
+              <span className="text-sm text-gray-700">
+                I agree to share this review publicly to help other travelers
+              </span>
+            </label>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl font-semibold hover:-translate-y-1 hover:shadow-lg transition-all"
+            >
+              Submit Review
+            </button>
+          </form>
+        </Modal>
+      
+        <ChatBox />
+      </div>
+    </Router>
   );
 };
 
