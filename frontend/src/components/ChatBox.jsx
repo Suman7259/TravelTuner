@@ -44,12 +44,16 @@ export default function ChatBox() {
     setInput("");
     setIsTyping(true);
 
-    try {
-      const response = await fetch("/api/v1/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage.content }),
-      });
+   try {
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/chat`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage.content }),
+    }
+  );
+
       
       const data = await response.json();
       
