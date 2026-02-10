@@ -20,6 +20,14 @@ app.use(cookieParser())
 
 
 //Routers
+app.get("/", (req, res) => {
+  res.send("TravelTuner Backend is running");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).send("API running");
+});
+
 import userRouter from './routes/user.routes.js'
 app.use("/api/v1/users", userRouter)
 
