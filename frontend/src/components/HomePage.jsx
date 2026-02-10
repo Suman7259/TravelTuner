@@ -128,11 +128,14 @@ const HomePage = ({
     const body = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch("/api/v1/itinerary/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/itinerary/generate`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }
+  );
 
       const data = await response.json();
 
